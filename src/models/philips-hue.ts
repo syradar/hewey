@@ -22,20 +22,26 @@ type PhilipsHUELightCapabilities = z.infer<
   typeof philips_hue_light_capabilities_schema
 >
 
+export const philips_hue_light_state_schema = z.object({
+  on: z.boolean(),
+  bri: z.number(),
+  hue: z.number(),
+  sat: z.number(),
+  effect: z.string(),
+  xy: z.tuple([z.number(), z.number()]),
+  ct: z.number(),
+  alert: z.string(),
+  colormode: z.string(),
+  mode: z.string(),
+  reachable: z.boolean(),
+})
+
+export type PhilipsHUELightState = z.infer<
+  typeof philips_hue_light_state_schema
+>
+
 export const philips_hue_light_schema = z.object({
-  state: z.object({
-    on: z.boolean(),
-    bri: z.number(),
-    hue: z.number(),
-    sat: z.number(),
-    effect: z.string(),
-    xy: z.tuple([z.number(), z.number()]),
-    ct: z.number(),
-    alert: z.string(),
-    colormode: z.string(),
-    mode: z.string(),
-    reachable: z.boolean(),
-  }),
+  state: philips_hue_light_state_schema,
   swupdate: z.object({
     state: z.string(),
     lastinstall: z.string(),
@@ -69,3 +75,10 @@ type PhilipsHUELightsResponse = z.infer<
 >
 
 export type PhilipsHUELight = z.infer<typeof philips_hue_light_schema>
+
+export const philips_hue_update_light_state_schema = z
+  .union([
+    z.object({ success: z.record(z.boolean()) }),
+    z.object({ error: z.record(z.boolean()) }),
+  ])
+  .array()

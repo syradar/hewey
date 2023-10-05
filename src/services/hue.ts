@@ -1,7 +1,12 @@
 import Elysia from 'elysia'
 import { Logger, LumberjackService } from './lumberjack'
 import { parse_zod_schema } from '../models/schema-parser'
-import { philips_hue_lights_response_schema } from '../models/philips-hue'
+import {
+  PhilipsHUELight,
+  PhilipsHUELightState,
+  philips_hue_lights_response_schema,
+  philips_hue_update_light_state_schema,
+} from '../models/philips-hue'
 
 class PhilipsHue {
   constructor(
@@ -20,6 +25,23 @@ class PhilipsHue {
     this.logger.debug('Philips Hue lights response', data)
 
     return parse_zod_schema(philips_hue_lights_response_schema, data)
+  }
+
+  async updateLightState(
+    lightId: string,
+    state: Partial<PhilipsHUELightState>,
+  ) {
+    const source = `${this.hueBridgeApi}/${this.apiKey}/lights/${lightId}/state`
+    const stringifiedState = JSON.stringify(state)
+    const response = await fetch(source, {
+      method: 'PUT',
+      body: stringifiedState,
+    })
+    const data = await response.json<any>()
+
+    this.logger.debug('Philips Hue lights response', data)
+
+    return parse_zod_schema(philips_hue_update_light_state_schema, data)
   }
 }
 const hueBridgeApi = Bun.env.HUE_BRIDGE_URL
