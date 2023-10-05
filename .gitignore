@@ -30,6 +30,10 @@ yarn-error.log*
 .env.test.local
 .env.production.local
 
+# local db
+hewey.db
+hewey.db.local
+
 # vercel
 .vercel
 
