@@ -1,11 +1,26 @@
 import Database from 'bun:sqlite'
 import Elysia from 'elysia'
 import { LumberjackService } from '../services/lumberjack'
+import { CONSTANTS } from '../../constants'
 
-const db = new Database('hewey.db.local')
-create_user_table_migration()
+const db = await init_db()
+await create_user_table_migration()
 
-function create_user_table_migration() {
+async function init_db() {
+  const file = Bun.file(CONSTANTS.DB_FILE_NAME)
+  const db_exists = await file.exists()
+  if (!db_exists) {
+    console.error(`Database file ${CONSTANTS.DB_FILE_NAME} does not exist.`)
+    process.exit(1)
+  }
+
+  const db = new Database(CONSTANTS.DB_FILE_NAME, {
+    create: false,
+    readonly: true,
+  })
+  return db
+}
+async function create_user_table_migration() {
   const q = db.query(
     'CREATE TABLE IF NOT EXISTS "users" (id INTEGER PRIMARY KEY AUTOINCREMENT, key TEXT NOT NULL);',
   )
